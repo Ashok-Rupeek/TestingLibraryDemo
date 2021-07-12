@@ -1,0 +1,113 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+apply plugin: 'maven-publish'
+
+def getVersionName = { ->
+    return "0.0.1"
+}
+
+// Add the name of your library here
+def getArtifactId = { ->
+    return "logger"
+}
+
+// Add the group ID of your library here
+def getGroupId = { ->
+    return "com.ashok.libraries"
+}
+
+def getGitHubUrl = { ->
+    return "https://maven.pkg.github.com/Ashok-Rupeek/TestingLibraryDemo"
+}
+
+
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                // Replace with your own group ID.
+                groupId getGroupId()
+
+                // Replace with the name of your library
+                artifactId getArtifactId()
+                version getVersionName()
+            }
+
+//            debug(MavenPublication) {
+//                from components.debug
+//
+//                // Replace with your own group ID.
+//                groupId getGroupId()
+//
+//                // Replace with the name of your library
+//                artifactId getArtifactId()
+//                version getVersionName()
+//            }
+        }
+
+        repositories {
+            maven {
+                name = "GitHubPackages"
+
+                // Replace GITHUB_USERID with your personal or organisation user ID and
+                // REPOSITORY with the name of the repository on GitHub
+                url = uri(getGitHubUrl())
+
+                Properties properties = new Properties()
+                properties.load(project.rootProject.file('local.properties').newDataInputStream())
+                def username1 = properties.getProperty('username')
+                def password1 = properties.getProperty('key')
+
+                credentials {
+                    username = username1
+                    password = password1
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}
